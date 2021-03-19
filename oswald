@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# (c) 2021 bwmabe
+# Filename: oswald
+
+# Oswald: an OpenSSL Wrapper (that's where the OSW in Oswald comes from :D)
+
+base_cmd="openssl aes-256-cbc -pbkdf2 "
+
+# Prints the usage either on help or an invalid command
+# Exits the program with a status of 0 if help was requested, 1 if invalid arg
+function print_usage {
+	echo "USAGE: oswald COMMAND [OPTIONS] THING"
+	echo "	encrypt [OPTIONS] : Encrypts, defaults to STDIN and STDOUT"
+	echo "	decrypt [OPTIONS] : Decrypts, defaults to STDIN and STDOUT"
+	echo "	help              : prints this"
+	echo " [OPTIONS] can be any valid OpenSSL command line options"
+	exit $1
+}
+
+function encrypt {
+	$base_cmd $@
+}
+
+function decrypt {
+	$base_cmd -d $@
+}
+
+# The 1st argument passed should be the command
+cmd=$1
+
+# Shift to pop the first arg, the command. Everything after should be options
+shift
+
+# Do stuff based on the command
+case $cmd in
+
+	help | -h | --help)
+		print_usage 0
+		;;
+	encrypt | e | -e)
+		encrypt "$@"
+		;;
+	decrypt | d | -d)
+		decrypt "$@"
+		;;
+	*)
+		print_usage 1
+		;;
+esac
+
+# vi:syntax=sh
